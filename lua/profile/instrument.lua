@@ -102,7 +102,7 @@ local function wrap_module(name, mod)
   for k in pairs(mod) do
     -- Do not wrap module functions that start with '_'
     -- Those have to be explicitly passed to instrument()
-    if not util.startswith(k, "_") then
+    if type(k) == "string" and not util.startswith(k, "_") then
       patch_function(name, mod, k)
     end
   end
