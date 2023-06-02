@@ -1,7 +1,7 @@
 local M = {}
 
 local MAX_ARG_LEN = 200
-local tbl_islist = vim.tbl_islist
+local tbl_isarray = vim.tbl_isarray
 
 M.split = function(string, pattern)
   local ret = {}
@@ -41,7 +41,7 @@ end
 local function sanitize(table)
   local clean = {}
   local iterfn
-  if tbl_islist(table) then
+  if tbl_isarray(table) then
     iterfn = ipairs
   else
     iterfn = pairs
