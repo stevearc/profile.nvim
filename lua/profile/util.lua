@@ -1,7 +1,7 @@
 local M = {}
 
 local MAX_ARG_LEN = 200
-local tbl_isarray = vim.tbl_isarray
+local tbl_isarray = vim.tbl_isarray or vim.tbl_islist
 
 M.split = function(string, pattern)
   local ret = {}
