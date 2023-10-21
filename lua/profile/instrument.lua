@@ -28,6 +28,7 @@ local instrument_list = {}
 local wrapped_modules = {}
 local wrapped_functions = {}
 M.recording = false
+M.sample_rate = 1
 local exposed_globals = {
   ["vim"] = vim,
   ["vim.fn"] = vim.fn,
@@ -56,6 +57,9 @@ end
 
 local function wrap_function(name, fn)
   return function(...)
+    if M.sample_rate < 1 and math.random() > M.sample_rate then
+      return fn(...)
+    end
     local arg_string = util.format_args(...)
     local start = clock()
     local function handle_result(...)
@@ -190,6 +194,14 @@ local function instrument(_, name)
     end
   end
   maybe_wrap_function(name)
+end
+
+---@param sample_rate number Float between 0 and 1
+M.set_sample_rate = function(sample_rate)
+  if sample_rate <= 0 or sample_rate > 1 then
+    error("sample_rate must be between 0 (exclusive) and 1 (inclusive)")
+  end
+  M.sample_rate = sample_rate
 end
 
 return setmetatable(M, {

@@ -27,6 +27,11 @@ M.ignore = function(name)
   instrument.ignore(name)
 end
 
+---@param sample_rate number Float between 0 and 1
+M.set_sample_rate = function(sample_rate)
+  instrument.set_sample_rate(sample_rate)
+end
+
 ---Start collecting data for a profile
 ---@param ... string Names or patterns of modules to instrument (if instrument() not called before this)
 M.start = function(...)
