@@ -114,7 +114,7 @@ end
 ---Write the trace to a file
 ---@param filename string
 M.export = function(filename)
-  local file = io.open(filename, "w")
+  local file = assert(io.open(filename, "w"))
   local events = instrument.get_events()
   file:write("[")
   for i, event in ipairs(events) do

@@ -117,6 +117,8 @@ local autocmds = {
   "WinScrolled",
 }
 
+---@param groupname string
+---@param fn string
 local function create(groupname, fn)
   local aug = vim.api.nvim_create_augroup(groupname, {})
   for _, autocmd in ipairs(autocmds) do

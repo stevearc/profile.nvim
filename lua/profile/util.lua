@@ -3,38 +3,37 @@ local M = {}
 local MAX_ARG_LEN = 200
 local tbl_isarray = vim.tbl_isarray or vim.tbl_islist
 
-M.split = function(string, pattern)
-  local ret = {}
-  for token in string.gmatch(string, "[^" .. pattern .. "]+") do
-    table.insert(ret, token)
-  end
-  return ret
-end
-
-M.pack = function(...)
-  return { n = select("#", ...), ... }
-end
-
+---@param glob string
+---@return string
 M.path_glob_to_regex = function(glob)
   local pattern = string.gsub(glob, "%.", "[%./]")
   pattern = string.gsub(pattern, "*", ".*")
   return "^" .. pattern .. "$"
 end
 
+---@param name string
+---@return string
 M.normalize_module_name = function(name)
-  return string.gsub(name, "/", ".")
+  local ret = string.gsub(name, "/", ".")
+  return ret
 end
 
+---@param haystack string
+---@param prefix string
+---@return boolean
 M.startswith = function(haystack, prefix)
   return string.find(haystack, prefix) == 1
 end
 
+---@param path string
+---@return string module
+---@return string tail
 M.split_path = function(path)
-  local pieces = M.split(path, "\\.")
+  local pieces = vim.split(path, ".", { plain = true })
   if #pieces == 1 then
     return "_G", path
   end
-  local mod = table.concat(M.pack(unpack(pieces, 1, #pieces - 1)), ".")
+  local mod = table.concat(vim.F.pack_len(unpack(pieces, 1, #pieces - 1)), ".")
   return mod, pieces[#pieces]
 end
 
@@ -66,8 +65,10 @@ local function sanitize(table)
   end
 end
 
+---@param ... any[]
+---@return any
 M.format_args = function(...)
-  local args = M.pack(...)
+  local args = vim.F.pack_len(...)
   if args.n == 0 then
     return nil
   elseif args.n == 1 and type(args[1]) == "table" then

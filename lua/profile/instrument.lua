@@ -157,7 +157,7 @@ M.get_module = function(name)
     end
   else
     mod = _G
-    local paths = util.split(name, "\\.")
+    local paths = vim.split(name, ".", { plain = true })
     for _, token in ipairs(paths) do
       mod = mod[token]
       if not mod then
