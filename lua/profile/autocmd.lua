@@ -118,19 +118,17 @@ local autocmds = {
 }
 
 local function create(groupname, fn)
-  local cmd = string.format("aug %s\nau!", groupname)
+  local aug = vim.api.nvim_create_augroup(groupname, {})
   for _, autocmd in ipairs(autocmds) do
-    cmd = cmd
-      .. "\n"
-      .. string.format(
-        [[autocmd %s * call luaeval("require'profile'.%s('%s', {match=_A})", expand('<amatch>'))]],
-        autocmd,
-        fn,
-        autocmd
-      )
+    vim.api.nvim_create_autocmd(autocmd, {
+      desc = "profile.nvim " .. fn,
+      pattern = "*",
+      group = aug,
+      callback = function(args)
+        require("profile")[fn](autocmd, { match = args.match })
+      end,
+    })
   end
-  cmd = cmd .. "\naug END"
-  vim.cmd(cmd)
 end
 
 M.instrument_start = function()
@@ -146,9 +144,9 @@ M.instrument_auto = function()
 end
 
 M.clear = function()
-  vim.cmd([[aug lua_profile
-  au!
-	aug END]])
+  vim.api.nvim_create_augroup("lua_profile", {})
+  vim.api.nvim_create_augroup("lua_profile_start", {})
+  vim.api.nvim_create_augroup("lua_profile_end", {})
 end
 
 return M
