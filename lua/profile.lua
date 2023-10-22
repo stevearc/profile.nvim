@@ -42,6 +42,7 @@ M.start = function(...)
   instrument.clear_events()
   clock.reset()
   instrument.recording = true
+  vim.api.nvim_exec_autocmds("User", { pattern = "ProfileStart", modeline = false })
 end
 
 ---@return boolean
@@ -52,6 +53,7 @@ end
 ---@param filename? string If present, write the profile data to this file
 M.stop = function(filename)
   instrument.recording = false
+  vim.api.nvim_exec_autocmds("User", { pattern = "ProfileStop", modeline = false })
   if filename then
     M.export(filename)
   end
