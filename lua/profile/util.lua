@@ -2,6 +2,8 @@ local M = {}
 
 local MAX_ARG_LEN = 200
 local tbl_isarray = vim.tbl_isarray or vim.tbl_islist
+local pack_len = vim.F.pack_len
+local split = vim.split
 
 ---@param glob string
 ---@return string
@@ -29,11 +31,11 @@ end
 ---@return string module
 ---@return string tail
 M.split_path = function(path)
-  local pieces = vim.split(path, ".", { plain = true })
+  local pieces = split(path, ".", { plain = true })
   if #pieces == 1 then
     return "_G", path
   end
-  local mod = table.concat(vim.F.pack_len(unpack(pieces, 1, #pieces - 1)), ".")
+  local mod = table.concat(pack_len(unpack(pieces, 1, #pieces - 1)), ".")
   return mod, pieces[#pieces]
 end
 
@@ -68,7 +70,7 @@ end
 ---@param ... any[]
 ---@return any
 M.format_args = function(...)
-  local args = vim.F.pack_len(...)
+  local args = pack_len(...)
   if args.n == 0 then
     return nil
   elseif args.n == 1 and type(args[1]) == "table" then
