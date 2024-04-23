@@ -1,7 +1,7 @@
 local M = {}
 
 local MAX_ARG_LEN = 200
-local tbl_isarray = vim.tbl_isarray or vim.tbl_islist
+local tbl_isarray = vim.isarray or vim.tbl_isarray or vim.tbl_islist
 local pack_len = vim.F.pack_len
 local split = vim.split
 
