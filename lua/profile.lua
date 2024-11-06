@@ -116,6 +116,8 @@ end
 ---Write the trace to a file
 ---@param filename string
 M.export = function(filename)
+  local original_recording = instrument.recording
+  instrument.recording = false
   local file = assert(io.open(filename, "w"))
   local events = instrument.get_events()
   file:write("[")
@@ -138,6 +140,7 @@ M.export = function(filename)
   end
   file:write("]")
   file:close()
+  instrument.recording = original_recording
 end
 
 return M
