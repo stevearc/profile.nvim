@@ -5,8 +5,8 @@ local util = require("profile.util")
 local M = {}
 
 local event_defaults = {
-  pid = 1,
-  tid = 1,
+  pid = util.DEFAULT_PROCESS_ID,
+  tid = util.DEFAULT_THREAD_ID,
 }
 
 ---Call this at the top of your init.vim to get durations for autocmds. If you
@@ -71,6 +71,8 @@ M.log_start = function(name, ...)
     args = util.format_args(...),
     cat = "function,manual",
     ph = "B",
+    pid = util.get_process_id(),
+    tid = util.get_thread_id(),
     ts = clock(),
   })
 end
@@ -86,6 +88,8 @@ M.log_end = function(name, ...)
     name = name,
     args = util.format_args(...),
     cat = "function,manual",
+    pid = util.get_process_id(),
+    tid = util.get_thread_id(),
     ph = "E",
     ts = clock(),
   })
@@ -103,6 +107,8 @@ M.log_instant = function(name, ...)
     args = util.format_args(...),
     cat = "",
     ph = "i",
+    pid = util.get_process_id(),
+    tid = util.get_thread_id(),
     ts = clock(),
     s = "g",
   })

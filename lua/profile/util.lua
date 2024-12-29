@@ -5,6 +5,46 @@ local tbl_isarray = vim.isarray or vim.tbl_isarray or vim.tbl_islist
 local pack_len = vim.F.pack_len
 local split = vim.split
 
+
+M.DEFAULT_PROCESS_ID = 1
+M.DEFAULT_THREAD_ID = 1
+
+if jit and jit.version then
+  local ffi = require("ffi")
+
+  if vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1 then
+    ffi.cdef([[
+      typedef unsigned long DWORD;
+      DWORD GetCurrentThreadId();
+    ]])
+
+    ---@return number # The current thread's ID number (1-or-more value).
+    function M.get_thread_id()
+      return ffi.C.GetCurrentThreadId()
+    end
+  else
+    ffi.cdef([[
+      typedef int pid_t;
+      pid_t gettid();
+    ]])
+
+    ---@return number # The current thread's ID number (1-or-more value).
+    function M.get_thread_id()
+      return ffi.C.gettid()
+    end
+  end
+else
+  ---@return number # The current thread's ID number (1-or-more value).
+  function M.get_thread_id()
+    return M.DEFAULT_THREAD_ID
+  end
+end
+
+---@return number # The current process's ID number (1-or-more value).
+function M.get_process_id()
+  return vim.uv.os_getpid()
+end
+
 ---@param glob string
 ---@return string
 M.path_glob_to_regex = function(glob)
