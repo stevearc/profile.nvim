@@ -2,6 +2,16 @@ local autocmd = require("profile.autocmd")
 local clock = require("profile.clock")
 local instrument = require("profile.instrument")
 local util = require("profile.util")
+
+---@class profile.Event A single, recorded profile event.
+---@field cat string The category of the profiler event. e.g. `"function"`, `"test"`, etc.
+---@field dur number The length of CPU time needed to complete the event.
+---@field name string The function call, file path, or other ID.
+---@field pid number? The process ID number.
+---@field tid number The thread ID number.
+---@field ts number The start CPU time.
+
+---@class Profiler
 local M = {}
 
 local event_defaults = {
@@ -115,11 +125,21 @@ end
 
 ---Write the trace to a file
 ---@param filename string
+---    A path on-disk where the profiler flamegraph will be exported to.
 M.export = function(filename)
+  M.write_events_to_file(filename, instrument.get_events())
+end
+
+---Write the trace to a file
+---@param filename string
+---    A path on-disk where the profiler flamegraph will be exported to.
+---@param events profile.Event[]
+---    The recorded profile event to export. If none are given, the global events are exported instead.
+---@private
+M.write_events_to_file = function(filename, events)
   local original_recording = instrument.recording
   instrument.recording = false
   local file = assert(io.open(filename, "w"))
-  local events = instrument.get_events()
   file:write("[")
   for i, event in ipairs(events) do
     local e = vim.tbl_extend("keep", event, event_defaults)
