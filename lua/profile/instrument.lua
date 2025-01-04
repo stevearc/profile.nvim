@@ -66,6 +66,8 @@ local function wrap_function(name, fn)
       local delta = clock() - start
       M.add_event({
         name = name,
+        pid = util.get_process_id(),
+        tid = util.get_thread_id(),
         args = arg_string,
         cat = "function",
         ph = "X",
