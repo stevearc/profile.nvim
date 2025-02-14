@@ -5,7 +5,6 @@ local tbl_isarray = vim.isarray or vim.tbl_isarray or vim.tbl_islist
 local pack_len = vim.F.pack_len
 local split = vim.split
 
-
 M.DEFAULT_PROCESS_ID = 1
 M.DEFAULT_THREAD_ID = 1
 
@@ -18,9 +17,16 @@ if jit and jit.version then
       DWORD GetCurrentThreadId();
     ]])
 
-    ---@return number # The current thread's ID number (1-or-more value).
+    ---@return number The current thread's ID number (1-or-more value).
     function M.get_thread_id()
       return ffi.C.GetCurrentThreadId()
+    end
+
+    -- Mac doesn't have gettid easily available
+  elseif vim.fn.has("mac") == 1 then
+    ---@return number The current thread's ID number (1-or-more value).
+    function M.get_thread_id()
+      return M.DEFAULT_THREAD_ID
     end
   else
     ffi.cdef([[
@@ -28,13 +34,13 @@ if jit and jit.version then
       pid_t gettid();
     ]])
 
-    ---@return number # The current thread's ID number (1-or-more value).
+    ---@return number The current thread's ID number (1-or-more value).
     function M.get_thread_id()
       return ffi.C.gettid()
     end
   end
 else
-  ---@return number # The current thread's ID number (1-or-more value).
+  ---@return number The current thread's ID number (1-or-more value).
   function M.get_thread_id()
     return M.DEFAULT_THREAD_ID
   end
