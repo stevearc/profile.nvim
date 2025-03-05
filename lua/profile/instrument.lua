@@ -55,19 +55,24 @@ local function should_instrument(name)
   end
 end
 
+local format_args = util.format_args
+local get_process_id = util.get_process_id
+local get_thread_id = util.get_thread_id
+local random = math.random
+
 local function wrap_function(name, fn)
   return function(...)
-    if M.sample_rate < 1 and math.random() > M.sample_rate then
+    if not M.recording or (M.sample_rate < 1 and random() > M.sample_rate) then
       return fn(...)
     end
-    local arg_string = util.format_args(...)
+    local arg_string = format_args(...)
     local start = clock()
     local function handle_result(...)
       local delta = clock() - start
-      M.add_event({
+      table.insert(events, {
         name = name,
-        pid = util.get_process_id(),
-        tid = util.get_thread_id(),
+        pid = get_process_id(),
+        tid = get_thread_id(),
         args = arg_string,
         cat = "function",
         ph = "X",
